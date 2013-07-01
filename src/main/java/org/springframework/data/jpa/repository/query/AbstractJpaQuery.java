@@ -95,18 +95,16 @@ public abstract class AbstractJpaQuery implements RepositoryQuery {
 
 	protected JpaQueryExecution getExecution() {
 
-		switch (method.getType()) {
-
-		case COLLECTION:
-			return new CollectionExecution();
-		case PAGING:
-			return new PagedExecution(method.getParameters());
-		case MODIFYING:
-			return method.getClearAutomatically() ? new ModifyingExecution(method, em) : new ModifyingExecution(method, null);
-		default:
-			return new SingleEntityExecution();
-		}
-	}
+        if (method.isCollectionQuery()) {
+            return new CollectionExecution();
+        } else if (method.isPageQuery()) {
+            return new PagedExecution(method.getParameters());
+        } else if (method.isModifyingQuery()) {
+            return method.getClearAutomatically() ? new ModifyingExecution(method, em) : new ModifyingExecution(method, null);
+        } else {
+            return new SingleEntityExecution();
+        }
+    }
 
 	protected ParameterBinder createBinder(Object[] values) {
 

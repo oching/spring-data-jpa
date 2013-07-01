@@ -32,12 +32,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
-import org.springframework.data.repository.query.parser.Property;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -160,7 +160,7 @@ public class JpaQueryCreator extends AbstractQueryCreator<CriteriaQuery<Object>,
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Predicate toPredicate(Part part, Root<?> root) {
 
-		Property property = part.getProperty();
+		PropertyPath property = part.getProperty();
 		Expression<Object> path = toExpressionRecursively(root, property);
 
 		switch (part.getType()) {

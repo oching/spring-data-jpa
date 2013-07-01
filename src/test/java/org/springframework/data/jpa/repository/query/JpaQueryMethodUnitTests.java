@@ -37,7 +37,6 @@ import org.springframework.data.jpa.repository.sample.UserRepository;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.DefaultRepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
-import org.springframework.data.repository.query.QueryMethod.Type;
 
 /**
  * Unit test for {@link QueryMethod}.
@@ -76,10 +75,13 @@ public class JpaQueryMethodUnitTests {
 	@Test
 	public void testname() {
 
-		JpaQueryMethod method = new JpaQueryMethod(repositoryMethod, metadata, extractor);
+		JpaQueryMethod method = new JpaQueryMethod(repositoryMethod, new DefaultRepositoryMetadata(UserRepository.class),
+                extractor);
 
 		assertEquals("User.findByLastname", method.getNamedQueryName());
-		assertThat(method.getType(), is(Type.COLLECTION));
+        assertThat(method.isCollectionQuery(), is(true));
+        assertThat(method.getAnnotatedQuery(), is(nullValue()));
+        assertThat(method.isPageQuery(), is(false));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -174,10 +176,11 @@ public class JpaQueryMethodUnitTests {
 	@Test
 	public void calculatesNamedQueryNamesCorrectly() throws SecurityException, NoSuchMethodException {
 
+        RepositoryMetadata metadata = new DefaultRepositoryMetadata(UserRepository.class);
+
 		JpaQueryMethod queryMethod = new JpaQueryMethod(repositoryMethod, metadata, extractor);
 		assertThat(queryMethod.getNamedQueryName(), is("User.findByLastname"));
 
-		RepositoryMetadata metadata = new DefaultRepositoryMetadata(UserRepository.class);
 		Method method = UserRepository.class.getMethod("renameAllUsersTo", String.class);
 		queryMethod = new JpaQueryMethod(method, metadata, extractor);
 		assertThat(queryMethod.getNamedQueryName(), is("User.renameAllUsersTo"));

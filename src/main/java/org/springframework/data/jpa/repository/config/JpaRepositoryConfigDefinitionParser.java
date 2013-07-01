@@ -43,6 +43,7 @@ class JpaRepositoryConfigDefinitionParser extends
 
 	private static final Class<?> PAB_POST_PROCESSOR = PersistenceAnnotationBeanPostProcessor.class;
 	private static final Class<?> PET_POST_PROCESSOR = PersistenceExceptionTranslationPostProcessor.class;
+    private static final String DEFAULT_TRANSACTION_MANAGER_BEAN_NAME = "transactionManager";
 
 	/*
 	 * (non-Javadoc)
@@ -71,6 +72,10 @@ class JpaRepositoryConfigDefinitionParser extends
 	@Override
 	protected void postProcessBeanDefinition(JpaRepositoryConfiguration ctx, BeanDefinitionBuilder builder,
 			BeanDefinitionRegistry registry, Object beanSource) {
+
+        String transactionManagerRef = StringUtils.hasText(ctx.getTransactionManagerRef()) ? ctx.getTransactionManagerRef()
+                : DEFAULT_TRANSACTION_MANAGER_BEAN_NAME;
+        builder.addPropertyValue("transactionManager", transactionManagerRef);
 
 		String entityManagerRef = ctx.getEntityManagerFactoryRef();
 
